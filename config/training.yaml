@@ -1,0 +1,39 @@
+seed: 42
+device: cpu
+checkpoint_dir: models/weights
+
+data:
+  train:
+    fg_dir: data/matting/train/foregrounds
+    alpha_dir: data/matting/train/alphas
+    bg_dir: data/matting/train/backgrounds
+  val:
+    fg_dir: data/matting/val/foregrounds
+    alpha_dir: data/matting/val/alphas
+    bg_dir: data/matting/val/backgrounds
+
+model:
+  backbone: mobilenet_v3_small
+  pretrained_backbone: true
+
+training:
+  epochs: 50
+  batch_size: 1
+  lr: 0.0001
+  num_workers: 0
+  device: cpu
+  gradient_clip_norm: 1.0
+  log_interval: 10
+
+scheduler:
+  name: cosine
+  per_step: false
+
+loss:
+  w1: 1.0
+  w2: 1.0
+  w3: 0.1
+
+logging:
+  backend: tensorboard
+  log_dir: runs/matting

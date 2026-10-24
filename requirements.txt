@@ -1,0 +1,10 @@
+numpy>=1.24
+opencv-python>=4.8
+PyYAML>=6.0
+torch>=2.1
+torchvision>=0.16
+fastapi>=0.110
+uvicorn[standard]>=0.27
+pytest>=8.0
+albumentations>=1.4,<3
+tensorboard>=2.14

@@ -63,6 +63,9 @@ class PhotoboothApp:
         self.depth_model_type = str(
             self.depth_config.get("model_type", "DPT_Hybrid")
         )
+        self.depth_enabled = bool(self.depth_config.get("enabled", False))
+        if self.device.type == "cpu":
+            torch.set_num_threads(int(config.get("cpu_threads", 4)))
         self.downsample_ratio = self._positive_number(
             self.model_config.get("downsample_ratio", 1.0),
             "model.downsample_ratio",
@@ -106,12 +109,14 @@ class PhotoboothApp:
                 str(self.model_path),
                 device=str(self.device),
                 downsample_ratio=self.downsample_ratio,
+                backbone=str(self.model_config.get("backbone", "mobilenet_v3_small")),
             )
             self.harmonizer = ColorHarmonizer()
-            self.depth = DepthEstimator(
-                model_type=self.depth_model_type,
-                device=str(self.device),
-            )
+            if self.depth_enabled:
+                self.depth = DepthEstimator(
+                    model_type=self.depth_model_type,
+                    device=str(self.device),
+                )
             self.composer = CanvasComposer(
                 str(self.background_path),
                 self.resolution,
@@ -241,9 +246,12 @@ class PhotoboothApp:
         alpha_a, foreground_a = self._resize_predictions(alpha_a, foreground_a)
         alpha_b, foreground_b = self._resize_predictions(alpha_b, foreground_b)
 
-        depth_a = self.depth.estimate_depth_map(frame_a)
-        depth_b = self.depth.estimate_depth_map(frame_b)
-        z_order = self.depth.get_z_order(depth_a, alpha_a, depth_b, alpha_b)
+        if self.depth is not None:
+            depth_a = self.depth.estimate_depth_map(frame_a)
+            depth_b = self.depth.estimate_depth_map(frame_b)
+            z_order = self.depth.get_z_order(depth_a, alpha_a, depth_b, alpha_b)
+        else:
+            z_order = str(self.depth_config.get("default_z_order", "A_over_B"))
 
         if self.harmonize_colors:
             foreground_a, foreground_b = self.harmonizer.harmonize_pair(

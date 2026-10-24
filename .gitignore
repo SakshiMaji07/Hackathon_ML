@@ -1,0 +1,14 @@
+# Local data and model artifacts
+data/raw/*
+data/processed/*
+models/weights/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!models/weights/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/

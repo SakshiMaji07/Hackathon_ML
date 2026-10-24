@@ -1,7 +1,7 @@
 import time
 import cv2
 import numpy as np
-from src.01_input.stream_capture import DualStreamCapture, WebcamStream
+from src.input.stream_capture import DualStreamCapture, WebcamStream
 
 class FakeCapture:
     def __init__(self, index):
